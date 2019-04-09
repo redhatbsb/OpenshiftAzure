@@ -64,27 +64,30 @@ oooouuuu.... exporta... ex:
 
 
 Ex: Sintaxe config.yaml
-# ==========================
-# Azure Specifics
-# ==========================
+\# ==========================
+\# Azure Specifics
+\# ==========================
 resource_group_name: Openshift
+
 location_resource_group: westus
+
 storage_account_name: stropenshift
+
 virtual_network_name: openshiftvn
 private_virtual_network_name: pvtopenshiftvn
 cluster_subnet_name: clustersubnet
 private_cluster_subnet_name: pvtclustersubnet
 admin_username_vm: ansible
 admin_password_vm: Redhat4ever!
-# ==========================
-# Subscription data
-# ==========================
+\# ==========================
+\# Subscription data
+\# ==========================
 user: email@subscriptionredhat
 password: 
 poolid: 
-# ==========================
-# Sisu Openshift Cluster
-# ==========================
+\# ==========================
+\# Sisu Openshift Cluster
+\# ==========================
 domain: openshift.4players.com.br
 cluster_hostname: master.{{ domain }}
 cluster_public_hostname: master.{{ domain }}
@@ -98,14 +101,14 @@ number_of_infras: 2
 number_of_workers: 2
 
 Ex: Sintaxe config.yml (para centos apoio)
-# ========================
-# Configuracoes essenciais
-# =======================
+\# ========================
+\# Configuracoes essenciais
+\# =======================
 provider: aws
 
-# ========================
-# Configuracoes AWS
-# ========================
+\# ========================
+\# Configuracoes AWS
+\# ========================
 aws_access_key: <aws access key>
 aws_secret_key: <aws secret key>
 aws_vpc_network: vpc-87fb8d4a
