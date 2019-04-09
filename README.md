@@ -64,9 +64,9 @@ oooouuuu.... exporta... ex:
 
 
 Ex: Sintaxe config.yaml
-\# ==========================
-\# Azure Specifics
-\# ==========================
+\# ==========================\n
+\# Azure Specifics\n
+\# ==========================\n
 resource_group_name: Openshift
 
 location_resource_group: westus
