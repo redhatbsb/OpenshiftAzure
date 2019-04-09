@@ -63,7 +63,7 @@ oooouuuu.... exporta... ex:
 `export AZURE_TENANT=80bc8516-d41e-4711-a0ec-2764bb`
 
 
-Ex: Sintaxe config.yaml
+Ex: Sintaxe config.yaml  
 \# ==========================  
 \# Azure Specifics  
 \# ==========================  
@@ -76,43 +76,43 @@ cluster_subnet_name: clustersubnet
 private_cluster_subnet_name: pvtclustersubnet  
 admin_username_vm: ansible  
 admin_password_vm: Redhat4ever!  
-\# ==========================
-\# Subscription data
-\# ==========================
-user: email@subscriptionredhat
-password: 
-poolid: 
-\# ==========================
-\# Sisu Openshift Cluster
-\# ==========================
-domain: openshift.4players.com.br
-cluster_hostname: master.{{ domain }}
-cluster_public_hostname: master.{{ domain }}
-nfs_server: bastion.{{ domain }}
-subdomain: apps.{{ domain }}
-master_machine_type: Standard_D4s_v3
-infra_machine_type: Standard_D4s_v3
-worker_machine_type: Standard_D2s_v3
-number_of_masters: 3
-number_of_infras: 2
-number_of_workers: 2
+\# ==========================  
+\# Subscription data  
+\# ==========================  
+user: email@subscriptionredhat  
+password:   
+poolid:   
+\# ==========================  
+\# Sisu Openshift Cluster  
+\# ==========================  
+domain: openshift.4players.com.br  
+cluster_hostname: master.{{ domain }}  
+cluster_public_hostname: master.{{ domain }}  
+nfs_server: bastion.{{ domain }}  
+subdomain: apps.{{ domain }}  
+master_machine_type: Standard_D4s_v3  
+infra_machine_type: Standard_D4s_v3  
+worker_machine_type: Standard_D2s_v3  
+number_of_masters: 3  
+number_of_infras: 2  
+number_of_workers: 2  
 
-Ex: Sintaxe config.yml (para centos apoio)
-\# ========================
-\# Configuracoes essenciais
-\# =======================
-provider: aws
+Ex: Sintaxe config.yml (para centos apoio)  
+\# ========================  
+\# Configuracoes essenciais  
+\# =======================  
+provider: aws  
 
-\# ========================
-\# Configuracoes AWS
-\# ========================
-aws_access_key: <aws access key>
-aws_secret_key: <aws secret key>
-aws_vpc_network: vpc-87fb8d4a
-aws_subnet_id: subnet-569s2dd0d
-aws_security_group: sg-a9sfee3d9
-aws_key_name: aws
-usuario_ssh_aws: centos
-chave_ssh: /home/seuusuario/aws/aws.pem
-image: ami-cb5803a7
+\# ========================  
+\# Configuracoes AWS  
+\# ========================  
+aws_access_key: <aws access key>  
+aws_secret_key: <aws secret key>  
+aws_vpc_network: vpc-87fb8d4a  
+aws_subnet_id: subnet-569s2dd0d  
+aws_security_group: sg-a9sfee3d9  
+aws_key_name: aws  
+usuario_ssh_aws: centos  
+chave_ssh: /home/seuusuario/aws/aws.pem  
+image: ami-cb5803a7  
 
