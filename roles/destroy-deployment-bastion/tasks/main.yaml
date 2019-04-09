@@ -1,0 +1,13 @@
+# ==============================
+# Bastion
+# ==============================
+
+- name: remove vm and all resources
+  azure_rm_virtualmachine:
+    resource_group: "{{ resource_group_name }}"
+    name: bastion
+    state: absent
+    remove_on_absent:
+        - network_interfaces
+        - virtual_storage
+        - public_ips

@@ -1,0 +1,26 @@
+- hosts: localhost
+  
+  tasks:
+  - name: Include variables
+    include_vars:
+      file: config.yaml
+
+#  - name: Destroy Deployment Infra Masters
+#    import_role:
+#      name: destroy-deployment-infra-masters
+    
+#  - name: Destroy Deployment Infra Infras
+#    import_role:
+#      name: destroy-deployment-infra-infras
+
+#  - name: Deployment Infra Workers
+#    import_role:
+#      name: destroy-deployment-infra-workers
+
+  - name: Destroy Bastion Host with inventory
+    import_role:
+      name: destroy-deployment-bastion
+
+  - name: Destroy basic Azure Infrastructure (Resource Groups, Networks, Subnets)
+    import_role: 
+     name: destroy-basic-azure-infrastructure

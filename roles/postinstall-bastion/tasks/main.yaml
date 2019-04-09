@@ -1,0 +1,144 @@
+- name: Initiate vars
+  set_fact:
+   masters_fqdn_only: ""
+   masters: ""
+   infras: ""
+   workers: ""
+   nfs: ""
+   newline: "\n"
+
+
+- name: Write masters fqdn only string
+  set_fact:
+    masters_fqdn_only: "{{ masters_fqdn_only }}{{ newline }}{{ item }}"
+  with_inventory_hostnames:
+    - masters
+
+- name: Write master nodes string
+  set_fact:
+    masters: "{{ masters }}{{ newline }}{{ item }}  openshift_node_group_name='node-config-master'"
+  with_inventory_hostnames:
+    - masters
+
+- name: Write infra nodes string
+  set_fact:
+    infras: "{{ infras }}{{ newline }}{{ item }}  openshift_node_group_name='node-config-infra'"
+  with_inventory_hostnames:
+    - infras
+
+- name: Write worker nodes string
+  set_fact:
+    workers: "{{ workers }}{{ newline }}{{ item }}  openshift_node_group_name='node-config-compute'"
+  with_inventory_hostnames:
+    - workers
+
+- name: Copy inventory file to bastion
+  template:
+    src: roles/deployment-bastion/files/inventory.j2
+    dest: /root/inventory.ini
+
+- name: Clean subscription
+  shell: "subscription-manager unregister"
+  ignore_errors: yes
+
+- name: Subscription
+  shell: "subscription-manager register  --username={{ user }} --password={{ password }}"
+
+- name: Refresh
+  shell: "subscription-manager refresh"
+  
+- name: Attach pool
+  shell: "subscription-manager attach --pool={{ poolid }}"
+
+- name: Disable repos
+  shell: subscription-manager repos --disable="*"
+
+#- name: Certify yum repolist empty
+#  shell:  yum-config-manager --disable \*
+
+- name: Enable repos
+  shell: subscription-manager repos --enable="rhel-7-server-rpms" --enable="rhel-7-server-extras-rpms" --enable="rhel-7-server-ose-3.11-rpms" --enable="rhel-7-server-ansible-2.6-rpms"
+
+- name: Install essential packages
+  yum:
+   name: "{{ item }}"
+   state: latest
+  with_items:
+   - wget 
+   - git 
+   - net-tools 
+   - bind-utils 
+   - yum-utils 
+   - iptables-services 
+   - bridge-utils 
+   - bash-completion 
+   - kexec-tools 
+   - sos 
+   - psacct
+
+- name: Update all packages
+  yum:
+   name: "*"
+   state: latest
+
+- name: Install openshift-ansible
+  yum:
+   name: openshift-ansible
+   state: latest
+
+- name: Change host check on ansible.cfg
+  lineinfile:
+   path: /etc/ansible/ansible.cfg
+   regexp: '^#host_key_checking'
+   line: 'host_key_checking = False'
+
+- name: Create playbooks dir
+  file:
+   path: /etc/ansible/playbooks
+   state: directory
+   mode: 0755
+
+- name: Clone git for pre-reqs
+  shell: git clone https://github.com/redhatbsb/ocp-playbooks.git /etc/ansible/playbooks/
+
+- name: Install packages for nfs server (nfs-utils)
+  yum:
+   name: nfs-utils 
+   state: latest
+
+- name: Install packages for nfs server (rpcbind)
+  yum:
+   name: rpcbind 
+   state: latest
+
+- name: Create exports dir
+  file:
+   path: /exports/
+   state: directory
+   mode: 0777
+
+- name: Create /etc/exports
+  copy:
+    content: '/exports *(rw,no_root_squash)'
+    dest: /etc/exports
+  
+- name: Create firewall rules
+  shell: "firewall-cmd --zone=public --add-port=2049/tcp --permanent" 
+
+- name: Create firewall rule for nfs
+  shell: firewall-cmd --add-service=nfs --zone=internal --permanent
+
+- name: Create firewall rule for mountd
+  shell: firewall-cmd --add-service=mountd --zone=internal --permanent
+
+- name: Create furewall rule for rpc-bind
+  shell: firewall-cmd --add-service=rpc-bind --zone=internal --permanent
+
+- name: Reload firewall
+  shell: "firewall-cmd --reload"
+
+- name: Restart NFS
+  service:
+   name: nfs
+   state: restarted
+

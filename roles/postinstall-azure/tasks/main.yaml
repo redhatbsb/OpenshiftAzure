@@ -1,0 +1,26 @@
+#- name: Create a Wildcard Apps DNS zone
+#  azure_rm_dnszone:
+#    resource_group: "{{ resource_group_name }}"
+#    name: "{{ subdomain }}"
+#    state: present
+
+#- name: Create DNS entry apps NS
+#  azure_rm_dnsrecordset:
+#    resource_group: "{{ resource_group_name }}"
+#    relative_name: "apps"
+#    zone_name: "{{ domain }}"
+#    record_type: NS
+#    state: present
+#    records:
+#      - entry: "ns1-09.azure-dns.com"
+
+#- name: Create DNS entry Wildcard
+#  azure_rm_dnsrecordset:
+#    resource_group: "{{ resource_group_name }}"
+#    relative_name: "*"
+#    zone_name: "{{ subdomain }}"
+#    record_type: CNAME
+#    state: present
+#    records:
+#      - entry: "infra01.{{ domain }}"
+

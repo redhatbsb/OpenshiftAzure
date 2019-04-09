@@ -1,0 +1,19 @@
+- name: Create master list
+  set_fact:
+   master_hostnames: []
+
+- name: Set masters hostname
+  set_fact: 
+    master_hostnames: "{{ master_hostnames }} + [  item  ]"
+  with_sequence: start=1 end={{ number_of_masters }} format=master%02d.{{ domain }}
+
+- name: Create machines
+  include_role:
+   name: machine-azure
+  vars:
+   machine_type: "{{ master_machine_type }}"
+   group_var: masters
+   asazure: mastersavailabilityset
+  with_items: "{{ master_hostnames }}"
+
+

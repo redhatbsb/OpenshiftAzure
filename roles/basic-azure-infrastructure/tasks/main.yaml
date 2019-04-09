@@ -1,0 +1,293 @@
+# ==============================================
+# General Azure Resources (RS, Vlan, Subnet, Firewall)
+# ==============================================
+
+# --------------------------------
+# Resource Group
+# --------------------------------
+
+- name: Create Resource Group
+  azure_rm_resourcegroup:
+    name: "{{ resource_group_name }}"
+    location: "{{ location_resource_group }}"
+    tags:
+        delete: never
+
+# --------------------------------
+# Virtual Network and Subnet
+# --------------------------------
+- name: Create Virtual Network
+  azure_rm_virtualnetwork:
+    resource_group: "{{ resource_group_name }}"
+    name: "{{ virtual_network_name }}"
+    address_prefixes: "10.10.0.0/16"
+
+- name: Add Subnet
+  azure_rm_subnet:
+    resource_group: "{{ resource_group_name }}"
+    name: "{{ cluster_subnet_name }}"
+    address_prefix: "10.10.0.0/24"
+    virtual_network: "{{ virtual_network_name }}"
+
+
+# --------------------------------
+# Security Groups
+# --------------------------------
+- name: Create security group which allows ingress traffic
+  azure_rm_securitygroup:
+    resource_group: "{{ resource_group_name }}"
+    name: openshiftsecgroup
+    rules:
+      - name: SSH
+        protocol: Tcp
+        destination_port_range: 22
+        access: Allow
+        priority: 101
+        direction: Inbound
+      - name: OpenshiftAPI8443
+        protocol: Tcp
+        destination_port_range: 8443
+        access: Allow
+        priority: 102
+        direction: Inbound
+      - name: HTTPS
+        protocol: Tcp
+        destination_port_range: 443
+        access: Allow
+        priority: 103
+        direction: Inbound
+      - name: HTTP
+        protocol: Tcp
+        destination_port_range: 80
+        access: Allow
+        priority: 104
+        direction: Inbound
+      - name: ETCD-2379
+        protocol: Tcp
+        destination_port_range: 2379
+        access: Allow
+        priority: 105
+        direction: Inbound
+      - name: ETCD-2380
+        protocol: Tcp
+        destination_port_range: 2380
+        access: Allow
+        priority: 106
+        direction: Inbound
+      - name: DNS-TCP
+        protocol: Tcp
+        destination_port_range: 8053
+        access: Allow
+        priority: 107
+        direction: Inbound
+      - name: DNS-UDP
+        protocol: Udp
+        destination_port_range: 8053
+        access: Allow
+        priority: 108
+        direction: Inbound
+      - name: Elasticsearch-9200
+        protocol: Tcp
+        destination_port_range: 9200
+        access: Allow
+        priority: 109
+        direction: Inbound
+      - name: Elasticsearch-9300
+        protocol: Tcp
+        destination_port_range: 9300
+        access: Allow
+        priority: 110
+        direction: Inbound
+      - name: SDN
+        protocol: Udp
+        destination_port_range: 4789
+        access: Allow
+        priority: 111
+        direction: Inbound
+      - name: Kubernetes
+        protocol: Tcp
+        destination_port_range: 10250
+        access: Allow
+        priority: 112
+        direction: Inbound
+      - name: HealthCheck
+        protocol: Tcp
+        destination_port_range: 10256
+        access: Allow
+        priority: 113
+        direction: Inbound
+
+
+# --------------------------------
+# DNS Zone
+# --------------------------------
+
+- name: Create a DNS zone
+  azure_rm_dnszone:
+    resource_group: "{{ resource_group_name }}"
+    name: "{{ domain }}"
+    state: present 
+
+# --------------------------------
+# Storage Account
+# --------------------------------
+- name: Create an Storage Account
+  azure_rm_storageaccount:
+    resource_group: "{{ resource_group_name }}"
+    name: "{{ storage_account_name }}"
+    type: Standard_RAGRS
+    tags:
+      delete: on-exit
+
+# --------------------------------
+# Availability Sets
+# --------------------------------
+- name: Create an availability set with default options for Masters
+  azure_rm_availabilityset:
+    name: mastersavailabilityset
+    location: "{{ location_resource_group }}"
+    resource_group: "{{ resource_group_name }}"
+    sku: Aligned
+
+- name: Create an availability set with default options for Infra
+  azure_rm_availabilityset:
+    name: infrasavailabilityset
+    location: "{{ location_resource_group }}"
+    resource_group: "{{ resource_group_name }}"
+    sku: Aligned
+
+- name: Create an availability set with default options for Workers
+  azure_rm_availabilityset:
+    name: workersavailabilityset
+    location: "{{ location_resource_group }}"
+    resource_group: "{{ resource_group_name }}"
+    sku: Aligned
+
+- name: Create an availability set with default options for Bastion
+  azure_rm_availabilityset:
+    name: bastionavailabilityset
+    location: "{{ location_resource_group }}"
+    resource_group: "{{ resource_group_name }}"
+    sku: Aligned
+
+# --------------------------------
+# Load Balancer
+# --------------------------------
+
+- name: Create Public IP for Master LB
+  azure_rm_publicipaddress:
+   resource_group: "{{ resource_group_name }}"
+   allocation_method: Static
+   name: "masterExternalLB"
+  register: iplbmaster
+
+
+- name: Create a load balancer
+  azure_rm_loadbalancer:
+    name: OcpMasterLB
+    location: "{{ location_resource_group }}"
+    resource_group: "{{ resource_group_name }}"
+    public_ip: masterExternalLB
+    probe_protocol: Tcp
+    probe_port: 443
+    probe_interval: 10
+    probe_fail_count: 3
+    protocol: Tcp
+    load_distribution: SourceIPProtocol
+    frontend_port: 443
+    backend_port: 443
+    idle_timeout: 4
+#    natpool_frontend_port_start: 1030
+#    natpool_frontend_port_end: 1040
+#    natpool_backend_port: 80
+#    natpool_protocol: Tcp
+
+- name: Create Public IP for InfraLB
+  azure_rm_publicipaddress:
+   resource_group: "{{ resource_group_name }}"
+   allocation_method: Static
+   name: "routerExternalLB"
+  register: iplbrouter
+
+
+- name: Create a load balancer
+  azure_rm_loadbalancer:
+    name: OcpRouterLB
+    location: "{{ location_resource_group }}"
+    resource_group: "{{ resource_group_name }}"
+    public_ip: routerExternalLB
+    probe_protocol: Tcp
+    probe_port: 80
+    probe_interval: 10
+    probe_fail_count: 3
+    protocol: Tcp
+    load_distribution: SourceIPProtocol
+    frontend_port: 80
+    backend_port: 80
+    idle_timeout: 4
+#    natpool_frontend_port_start: 1030
+#    natpool_frontend_port_end: 1040
+#    natpool_backend_port: 80
+#    natpool_protocol: Tcp
+
+- name: Create a load balancer
+  azure_rm_loadbalancer:
+    name: OcpRouterLBHTTPS
+    location: "{{ location_resource_group }}"
+    resource_group: "{{ resource_group_name }}"
+    public_ip: routerExternalLB
+    probe_protocol: Tcp
+    probe_port: 443
+    probe_interval: 10
+    probe_fail_count: 3
+    protocol: Tcp
+    load_distribution: SourceIPProtocol
+    frontend_port: 443
+    backend_port: 443
+    idle_timeout: 4
+#    natpool_frontend_port_start: 1030
+#    natpool_frontend_port_end: 1040
+#    natpool_backend_port: 80
+#    natpool_protocol: Tcp
+
+
+- name: Getting hostname from fqdn
+  set_fact:
+     purehostnamemaster: "{{ cluster_public_hostname | regex_replace('.'+domain, '')}}"
+
+- name: Create DNS entry for Master LB
+  azure_rm_dnsrecordset:
+    resource_group: "{{ resource_group_name }}"
+    relative_name: "{{ purehostnamemaster }}"
+    zone_name: "{{ domain }}"
+    record_type: A
+    state: present
+    records:
+      - entry: "{{ iplbmaster.state.ip_address }}"
+
+- name: Create a Wildcard Apps DNS zone
+  azure_rm_dnszone:
+    resource_group: "{{ resource_group_name }}"
+    name: "{{ subdomain }}"
+    state: present
+
+- name: Create DNS entry apps NS
+  azure_rm_dnsrecordset:
+    resource_group: "{{ resource_group_name }}"
+    relative_name: "apps"
+    zone_name: "{{ domain }}"
+    record_type: NS
+    state: present
+    records:
+      - entry: "ns1-09.azure-dns.com"
+
+- name: Create DNS entry for Router LB
+  azure_rm_dnsrecordset:
+    resource_group: "{{ resource_group_name }}"
+    relative_name: "*"
+    zone_name: "{{ subdomain }}"
+    record_type: A
+    state: present
+    records:
+      - entry: "{{ iplbrouter.state.ip_address }}"
+ 

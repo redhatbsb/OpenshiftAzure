@@ -1,0 +1,20 @@
+- name: Create infra list
+  set_fact:
+   infra_hostnames: []
+
+- name: Set infras hostname
+  set_fact: 
+    infra_hostnames: "{{ infra_hostnames }} + [  item  ]"
+  with_sequence: start=1 end={{ number_of_infras }} format=infra%02d.{{ domain }}
+
+- name: Create machines
+  include_role:
+   name: machine-azure
+  vars:
+   machine_type: "{{ infra_machine_type }}"
+   group_var: infras
+   asazure: infrasavailabilityset
+  with_items: "{{ infra_hostnames }}"
+
+
+

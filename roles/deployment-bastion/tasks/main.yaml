@@ -1,0 +1,13 @@
+# ==============================
+# Bastion
+# ==============================
+
+- name: Create machine Bastion
+  include_role:
+   name: machine-azure
+  vars:
+   machine_type: "{{ worker_machine_type }}"
+   group_var: "bastions"
+   asazure: "bastionavailabilityset"
+  with_items:
+    - "bastion.{{ domain }}"

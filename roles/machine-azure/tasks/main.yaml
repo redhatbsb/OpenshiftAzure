@@ -1,0 +1,145 @@
+# ==============================
+# Machine Template Creation
+# ==============================
+- name: Getting hostname from fqdn
+  set_fact:
+     purehostname: "{{ item | regex_replace('.'+domain, '')}}"
+     group_var_filtered: "{{ group_var }}"
+
+# ===============================================
+# For bastion, we have two network interfaces...
+# ===============================================
+- name: Create Public IP
+  azure_rm_publicipaddress:
+   resource_group: "{{ resource_group_name }}"
+   allocation_method: Static
+   name: "ip-{{ item }}"
+  register: ipvm
+  when: group_var_filtered == "bastions"
+
+- name: Create Public NIC
+  azure_rm_networkinterface:
+    resource_group: "{{ resource_group_name }}"
+    name: "nic-{{ item }}"
+    virtual_network: "{{ virtual_network_name }}"
+    subnet: "{{ cluster_subnet_name }}"
+    security_group: openshiftsecgroup
+    ip_configurations:
+      - name: ipconfig1
+        public_ip_address_name: "ip-{{ item }}"
+        primary: True
+  when: group_var_filtered == "bastions"
+
+- name: Create Public NIC
+  azure_rm_networkinterface:
+    resource_group: "{{ resource_group_name }}"
+    name: "nic-{{ item }}"
+    virtual_network: "{{ virtual_network_name }}"
+    subnet: "{{ cluster_subnet_name }}"
+    security_group: openshiftsecgroup
+#    ip_configurations:
+#      - name: ipconfig1
+#        public_ip_address_name: "ip-{{ item }}"
+#        primary: True
+  when: group_var_filtered != "bastions"
+
+
+- name: Create VM
+  azure_rm_virtualmachine:
+   resource_group: "{{ resource_group_name }}"
+   name: "{{ item }}"
+   vm_size: "{{ machine_type }}"
+   admin_username: "{{ admin_username_vm }}"
+   admin_password: "{{ admin_password_vm }}"
+   network_interfaces: 
+     - "nic-{{ item }}"
+   managed_disk_type: Standard_LRS
+   availability_set: "{{ asazure }}"
+   image:
+     offer: RHEL
+     publisher: RedHat
+     sku: '7-RAW'
+     version: 7.6.2018103108
+   data_disks:
+        - lun: 0
+          disk_size_gb: 64
+          managed_disk_type: Standard_LRS
+        - lun: 1
+          disk_size_gb: 128
+          managed_disk_type: Premium_LRS
+  register: "vm-{{ item }}"
+  when: group_var_filtered == "bastions"
+
+
+# ===============================================
+# For Nodes, Only VMs with one NIC
+# ===============================================
+
+- name: Create VM
+  azure_rm_virtualmachine:
+   resource_group: "{{ resource_group_name }}"
+   name: "{{ item }}"
+   vm_size: "{{ machine_type }}"
+   admin_username: "{{ admin_username_vm }}"
+   admin_password: "{{ admin_password_vm }}"
+   network_interfaces:
+     - "nic-{{ item }}"
+   managed_disk_type: Standard_LRS
+   availability_set: "{{ asazure }}"
+   image:
+     offer: RHEL
+     publisher: RedHat
+     sku: '7-RAW'
+     version: 7.6.2018103108
+   data_disks:
+        - lun: 0
+          disk_size_gb: 128
+          managed_disk_type: Standard_LRS
+  register: "vm-{{ item }}"
+  when: group_var_filtered != "bastions"
+
+
+
+- name: Create DNS entry
+  azure_rm_dnsrecordset:
+    resource_group: "{{ resource_group_name }}"
+    relative_name: "{{ purehostname }}"
+    zone_name: "{{ domain }}"
+    record_type: A
+    state: present
+    records:
+      - entry: "{{ ipvm.state.ip_address }}"
+  when: group_var_filtered == "bastions"
+
+- name: Add machine to the inventory
+  add_host:
+    name: "{{ ipvm.state.ip_address }}"
+    groups: cluster_openshift
+  when: group_var_filtered == "bastions"
+
+- name: Add machine to the inventory Masters
+  add_host:
+    name: "{{ item }}"
+    groups: masters
+  when: group_var_filtered == "masters"
+
+- name: Add machine to the inventory Infras
+  add_host:
+    name: "{{ item }}"
+    groups: infras
+  when: group_var_filtered == "infras"
+
+- name: Add machine to the inventory Workers
+  add_host:
+    name: "{{ item }}"
+    groups: workers
+  when: group_var_filtered == "workers"
+
+- name: Add machine to the bastion inventory
+  add_host:
+    name: "{{ ipvm.state.ip_address }}"
+    groups: bastiongroup
+    ansible_user: "{{ admin_username_vm }}"
+    ansible_ssh_pass: "{{ admin_password_vm }}"
+    ansible_sudo_pass: "{{ admin_password_vm }}"
+  when: purehostname == "bastion"

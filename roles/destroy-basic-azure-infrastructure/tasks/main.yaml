@@ -1,0 +1,27 @@
+# ==============================================
+# General Azure Resources (RS, Vlan, Subnet, Firewall)
+# ==============================================
+- name: Remove Security Group
+  azure_rm_securitygroup:
+    resource_group: "{{ resource_group_name }}"
+    name: openshiftsecgroup
+    state: absent
+
+- name: Remove Subnet
+  azure_rm_subnet:
+    resource_group: "{{ resource_group_name }}"
+    name: "{{ cluster_subnet_name }}"
+    virtual_network_name: "{{ virtual_network_name }}"
+    state: absent
+
+- name: Delete a virtual network
+  azure_rm_virtualnetwork:
+    name: "{{ virtual_network_name }}"
+    resource_group: "{{ resource_group_name }}"
+    state: absent
+
+- name: Remove DNS Zone
+  azure_rm_dnszone:
+    resource_group: "{{ resource_group_name }}"
+    name: "{{ domain }}"
+    state: absent

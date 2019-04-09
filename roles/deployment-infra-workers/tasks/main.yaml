@@ -1,0 +1,19 @@
+- name: Create worker list
+  set_fact:
+   worker_hostnames: []
+
+- name: Set workers hostname
+  set_fact: 
+    worker_hostnames: "{{ worker_hostnames }} + [  item  ]"
+  with_sequence: start=1 end={{ number_of_workers }} format=worker%02d.{{ domain }}
+
+
+- name: Create machines
+  include_role:
+   name: machine-azure
+  vars:
+   machine_type: "{{ worker_machine_type }}"
+   group_var: workers
+   asazure: "workersavailabilityset"
+  with_items: "{{ worker_hostnames }}"
+

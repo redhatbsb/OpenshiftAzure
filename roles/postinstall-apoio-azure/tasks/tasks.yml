@@ -1,0 +1,55 @@
+- name:  Importa assinatura
+  shell: "rpm --import https://packages.microsoft.com/keys/microsoft.asc"  
+  
+- name:  Importa Repositorio MS
+  shell: sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'  
+
+- name: Roda check update
+  shell: "yum check-update -y"
+  ignore_errors: yes
+
+- name: Instala pacotes
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - gcc 
+    - libffi-devel 
+    - python-devel 
+    - openssl-devel 
+    - epel-release
+    - git
+
+- name: Instala azure-cli
+  yum:
+   name: azure-cli
+   state: latest
+
+- name: Instala Python pip
+  yum:
+    name: python-pip
+    state: present
+
+- name: Instala Python wheel
+  yum:
+    name: python-wheel
+    state: present
+
+- name: Instala Ansible Azure
+  shell: "pip install ansible[azure]"
+
+- name: Instala dependencias boto
+  shell: "pip install botocore boto3 boto"
+
+- name: Define IP para ser usado para acesso remoto para Amazon
+  set_fact:
+    public_ip: "{{ private_ip }}"
+    public_ip_final: "{{ public_ip }}"
+  when: provider == "aws"
+
+- name: Clona diretorio git para home do centos
+  shell: "cd /home/centos/; git clone https://github.com/redhatbsb/clusteropenshiftazure.git"
+
+- name: Imprimindo mensagem de sucesso
+  debug:
+   msg: "A maquina esta disponivel para acesso usando sua chave pelo comando ssh {{ public_ip_final }} \n"
