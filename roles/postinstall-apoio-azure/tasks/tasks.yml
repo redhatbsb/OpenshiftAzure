@@ -48,7 +48,7 @@
   when: provider == "aws"
 
 - name: Clona diretorio git para home do centos
-  shell: "cd /home/centos/; git clone https://github.com/redhatbsb/clusteropenshiftazure.git"
+  shell: "cd /home/centos/; git clone https://github.com/redhatbsb/OpenshiftAzure.git"
 
 - name: Imprimindo mensagem de sucesso
   debug:
