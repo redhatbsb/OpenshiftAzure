@@ -64,21 +64,18 @@ oooouuuu.... exporta... ex:
 
 
 Ex: Sintaxe config.yaml
-\# ==========================\n
-\# Azure Specifics\n
-\# ==========================\n
-resource_group_name: Openshift
-
-location_resource_group: westus
-
-storage_account_name: stropenshift
-
-virtual_network_name: openshiftvn
-private_virtual_network_name: pvtopenshiftvn
-cluster_subnet_name: clustersubnet
-private_cluster_subnet_name: pvtclustersubnet
-admin_username_vm: ansible
-admin_password_vm: Redhat4ever!
+\# ==========================  
+\# Azure Specifics  
+\# ==========================  
+resource_group_name: Openshift  
+location_resource_group: westus  
+storage_account_name: stropenshift  
+virtual_network_name: openshiftvn  
+private_virtual_network_name: pvtopenshiftvn  
+cluster_subnet_name: clustersubnet  
+private_cluster_subnet_name: pvtclustersubnet  
+admin_username_vm: ansible  
+admin_password_vm: Redhat4ever!  
 \# ==========================
 \# Subscription data
 \# ==========================
