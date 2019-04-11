@@ -142,3 +142,10 @@
    name: nfs
    state: restarted
 
+- name: Copy inventory file to the right place
+  copy:
+    src: /root/inventory.ini
+    dest: /etc/ansible/hosts
+    remote_src: yes
+    mode: preserve
+
