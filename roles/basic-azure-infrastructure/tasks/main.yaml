@@ -230,21 +230,21 @@
 #    natpool_backend_port: 80
 #    natpool_protocol: Tcp
 
-- name: Create a load balancer
-  azure_rm_loadbalancer:
-    name: OcpRouterLBHTTPS
-    location: "{{ location_resource_group }}"
-    resource_group: "{{ resource_group_name }}"
-    public_ip: routerExternalLB
-    probe_protocol: Tcp
-    probe_port: 443
-    probe_interval: 10
-    probe_fail_count: 3
-    protocol: Tcp
-    load_distribution: SourceIPProtocol
-    frontend_port: 443
-    backend_port: 443
-    idle_timeout: 4
+#- name: Create a load balancer
+#  azure_rm_loadbalancer:
+#    name: OcpRouterLBHTTPS
+#    location: "{{ location_resource_group }}"
+#    resource_group: "{{ resource_group_name }}"
+#    public_ip: routerExternalLB
+#    probe_protocol: Tcp
+#    probe_port: 443
+#    probe_interval: 10
+#    probe_fail_count: 3
+#    protocol: Tcp
+#    load_distribution: SourceIPProtocol
+#    frontend_port: 443
+#    backend_port: 443
+#    idle_timeout: 4
 #    natpool_frontend_port_start: 1030
 #    natpool_frontend_port_end: 1040
 #    natpool_backend_port: 80
