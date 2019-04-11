@@ -27,6 +27,17 @@ openshift_master_console_port=443
 openshift_master_htpasswd_users={'admin': '$apr1$xySBCH36$Lzw6m81rKP/hIqJYbXUht0', 'developer': '$apr1$xySBCH36$Lzw6m81rKP/hIqJYbXUht0'}
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
 
+
+# ============================================
+# Configurações da Azure
+# ============================================
+openshift_cloudprovider_kind=azure
+openshift_cloudprovider_azure_client_id={{ openshift_cloudprovider_azure_client_id  }}
+openshift_cloudprovider_azure_client_secret={{ openshift_cloudprovider_azure_client_secret }} 
+openshift_cloudprovider_azure_tenant_id={{ openshift_cloudprovider_azure_tenant_id }}
+openshift_cloudprovider_azure_subscription_id={{ openshift_cloudprovider_azure_subscription_id }}
+openshift_cloudprovider_azure_resource_group={{ resource_group_name }}
+openshift_cloudprovider_azure_location={{ location_resource_group }}
 # ===========================================
 # Networking
 # ===========================================
@@ -58,19 +69,21 @@ openshift_cluster_monitoring_operator_install=true
 # ===========================================
 # Registry
 # ===========================================
-openshift_hosted_registry_storage_kind=nfs
-openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
-openshift_hosted_registry_storage_nfs_directory=/exports
-openshift_hosted_registry_storage_nfs_options='*(rw,root_squash)'
-openshift_hosted_registry_storage_volume_name=registry
-openshift_hosted_registry_storage_volume_size=10Gi
+#openshift_hosted_registry_storage_kind=nfs
+#openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
+#openshift_hosted_registry_storage_nfs_directory=/exports
+#openshift_hosted_registry_storage_nfs_options='*(rw,root_squash)'
+#openshift_hosted_registry_storage_volume_name=registry
+#openshift_hosted_registry_storage_volume_size=10Gi
 
-# ------> Descomentar caso seja usado gluster
-#openshift_hosted_registry_selector='node-role.kubernetes.io/infra=true'
-#openshift_hosted_registry_storage_kind=glusterfs 
-#openshift_hosted_registry_storage_volume_size=80Gi
-#openshift_hosted_registry_selector='node-role.kubernetes.io/infra=true'
-#openshift_storage_glusterfs_registry_wipe=true
+# ------> Descomentar caso seja usado Azure
+openshift_hosted_registry_storage_kind=object
+openshift_hosted_registry_storage_provider=azure_blob
+openshift_hosted_registry_storage_azure_blob_accountname={{ storage_account_name }}
+openshift_hosted_registry_storage_azure_blob_accountkey={{ storage_account_key }}
+openshift_hosted_registry_storage_azure_blob_container=registry
+openshift_hosted_registry_storage_azure_blob_realm=core.windows.net
+
 
 # ===========================================
 # Logging
