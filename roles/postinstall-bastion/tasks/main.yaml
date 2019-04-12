@@ -1,3 +1,7 @@
+- name: Include variables
+  include_vars:
+    file: config.yaml
+
 - name: Initiate vars
   set_fact:
    masters_fqdn_only: ""
@@ -100,6 +104,7 @@
 
 - name: Clone git for pre-reqs
   shell: git clone https://github.com/redhatbsb/ocp-playbooks.git /etc/ansible/playbooks/
+  ignore_errors: yes
 
 - name: Install packages for nfs server (nfs-utils)
   yum:
