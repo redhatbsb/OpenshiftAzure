@@ -116,3 +116,8 @@ usuario_ssh_aws: centos
 chave_ssh: /home/seuusuario/aws/aws.pem  
 image: ami-cb5803a7  
 
+Informacoes Importantes para Azure como Servico:  
+- Usar Google Chrome ao solicitar (Firefox possui bugs)
+- Gerar o Vault de senha com os comandos abaixo:  
+`az keyvault create -n KeyOpenshiftNew -g Openshift -l 'West US' --enabled-for-template-deployment true`  
+`az keyvault secret set --vault-name KeyOpenshiftNew -n OpenshiftSecret --file ~/.ssh/id_rsa`
