@@ -120,4 +120,9 @@ Informacoes Importantes para Azure como Servico:
 - Usar Google Chrome ao solicitar (Firefox possui bugs)
 - Gerar o Vault de senha com os comandos abaixo:  
 `az keyvault create -n KeyOpenshiftNew -g Openshift -l 'West US' --enabled-for-template-deployment true`  
-`az keyvault secret set --vault-name KeyOpenshiftNew -n OpenshiftSecret --file ~/.ssh/id_rsa`
+`az keyvault secret set --vault-name KeyOpenshiftNew -n OpenshiftSecret --file ~/.ssh/id_rsa`  
+
+
+# Passos ainda Manuais:  
+- Ajuste de backend de balanceadores Master e Router (idem regras e probes)
+- Criacao da conta de armazenamento para blob e container para registry
