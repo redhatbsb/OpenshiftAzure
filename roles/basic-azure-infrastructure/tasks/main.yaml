@@ -147,6 +147,7 @@
     name: mastersavailabilityset
     location: "{{ location_resource_group }}"
     resource_group: "{{ resource_group_name }}"
+    platform_fault_domain_count: 2
     sku: Aligned
 
 - name: Create an availability set with default options for Infra
@@ -154,6 +155,7 @@
     name: infrasavailabilityset
     location: "{{ location_resource_group }}"
     resource_group: "{{ resource_group_name }}"
+    platform_fault_domain_count: 2
     sku: Aligned
 
 - name: Create an availability set with default options for Workers
@@ -161,6 +163,7 @@
     name: workersavailabilityset
     location: "{{ location_resource_group }}"
     resource_group: "{{ resource_group_name }}"
+    platform_fault_domain_count: 2
     sku: Aligned
 
 - name: Create an availability set with default options for Bastion
@@ -168,6 +171,7 @@
     name: bastionavailabilityset
     location: "{{ location_resource_group }}"
     resource_group: "{{ resource_group_name }}"
+    platform_fault_domain_count: 2
     sku: Aligned
 
 # --------------------------------
