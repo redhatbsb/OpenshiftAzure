@@ -36,9 +36,9 @@ Retrying role assignment creation: 1/36
   "tenant": "80bc8516-d41e-4711-a0ec-227764bb"
 }
 
-Criar diretorio de credenciais:
-`mkdir ~/.azure`
-`vi ~/.azure/credentials`
+Criar diretorio de credenciais:  
+`mkdir ~/.azure`  
+`vi ~/.azure/credentials`  
 [default]  
 subscription_id=<your-subscription_id>  
 client_id=<security-principal-appid>  
