@@ -247,7 +247,7 @@
 
 
 
-#me: Create Router Load Balancer
+- name: Create Router Load Balancer
   azure_rm_loadbalancer:
     name: OcpRouterLB
     location: "{{ location_resource_group }}"
