@@ -200,60 +200,34 @@
   register: iplbmaster
 
 
-- name: Create a load balancer
+- name: Create Master Load Balancer
   azure_rm_loadbalancer:
     name: OcpMasterLB
     location: "{{ location_resource_group }}"
     resource_group: "{{ resource_group_name }}"
-    public_ip: masterExternalLB
-    probe_protocol: Tcp
-    probe_port: 443
-    probe_interval: 10
-    probe_fail_count: 3
-    protocol: Tcp
-    load_distribution: SourceIPProtocol
-    frontend_port: 443
-    backend_port: 443
-    idle_timeout: 4
-#    natpool_frontend_port_start: 1030
-#    natpool_frontend_port_end: 1040
-#    natpool_backend_port: 80
-#    natpool_protocol: Tcp
+    frontend_ip_configurations:
+      - name: frontendipconfm0
+        public_ip_address: masterExternalLB
+    backend_address_pools:
+      - name: backendaddrpoolm0
+    probes:
+      - name: probm0
+        port: 80
+    load_balancing_rules:
+      - name: lbrbalancingrulem0
+        frontend_ip_configuration: frontendipconfm0
+        backend_address_pool: backendaddrpoolm0
+        frontend_port: 443
+        backend_port: 443
+        probe: probm0
 
-- name: Create Public IP for InfraLB
-  azure_rm_publicipaddress:
-   resource_group: "{{ resource_group_name }}"
-   allocation_method: Static
-   name: "routerExternalLB"
-  register: iplbrouter
-
-
-- name: Create a load balancer
-  azure_rm_loadbalancer:
-    name: OcpRouterLB
-    location: "{{ location_resource_group }}"
-    resource_group: "{{ resource_group_name }}"
-    public_ip: routerExternalLB
-    probe_protocol: Tcp
-    probe_port: 80
-    probe_interval: 10
-    probe_fail_count: 3
-    protocol: Tcp
-    load_distribution: SourceIPProtocol
-    frontend_port: 80
-    backend_port: 80
-    idle_timeout: 4
-#    natpool_frontend_port_start: 1030
-#    natpool_frontend_port_end: 1040
-#    natpool_backend_port: 80
-#    natpool_protocol: Tcp
 
 #- name: Create a load balancer
 #  azure_rm_loadbalancer:
-#    name: OcpRouterLBHTTPS
+#    name: OcpMasterLB
 #    location: "{{ location_resource_group }}"
 #    resource_group: "{{ resource_group_name }}"
-#    public_ip: routerExternalLB
+#    public_ip: masterExternalLB
 #    probe_protocol: Tcp
 #    probe_port: 443
 #    probe_interval: 10
@@ -263,10 +237,44 @@
 #    frontend_port: 443
 #    backend_port: 443
 #    idle_timeout: 4
-#    natpool_frontend_port_start: 1030
-#    natpool_frontend_port_end: 1040
-#    natpool_backend_port: 80
-#    natpool_protocol: Tcp
+
+- name: Create Public IP for InfraLB
+  azure_rm_publicipaddress:
+   resource_group: "{{ resource_group_name }}"
+   allocation_method: Static
+   name: "routerExternalLB"
+  register: iplbrouter
+
+
+
+#me: Create Router Load Balancer
+  azure_rm_loadbalancer:
+    name: OcpRouterLB
+    location: "{{ location_resource_group }}"
+    resource_group: "{{ resource_group_name }}"
+    frontend_ip_configurations:
+      - name: frontendipconf0
+        public_ip_address: routerExternalLB
+    backend_address_pools:
+      - name: backendaddrpool0
+    probes:
+      - name: prob0
+        port: 80
+      - name: prob1
+        port: 443
+    load_balancing_rules:
+      - name: lbrbalancingrule0
+        frontend_ip_configuration: frontendipconf0
+        backend_address_pool: backendaddrpool0
+        frontend_port: 80
+        backend_port: 80
+        probe: prob0
+      - name: lbrbalancingrule1
+        frontend_ip_configuration: frontendipconf0
+        backend_address_pool: backendaddrpool0
+        frontend_port: 443
+        backend_port: 443
+        probe: prob1
 
 
 - name: Getting hostname from fqdn

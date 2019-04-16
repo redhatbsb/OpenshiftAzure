@@ -30,18 +30,43 @@
         primary: True
   when: group_var_filtered == "bastions"
 
-- name: Create Public NIC
+- name: Create Public NIC for Masters
   azure_rm_networkinterface:
     resource_group: "{{ resource_group_name }}"
     name: "nic-{{ item }}"
     virtual_network: "{{ virtual_network_name }}"
     subnet: "{{ cluster_subnet_name }}"
     security_group: openshiftsecgroup
-#    ip_configurations:
-#      - name: ipconfig1
-#        public_ip_address_name: "ip-{{ item }}"
-#        primary: True
-  when: group_var_filtered != "bastions"
+    ip_configurations:
+      - name: ipconfig1
+        load_balancer_backend_address_pools:
+         - name: backendaddrpoolm0
+           load_balancer: OcpMasterLB 
+  when: group_var_filtered == "masters"
+
+- name: Create Public NIC for Infras
+  azure_rm_networkinterface:
+    resource_group: "{{ resource_group_name }}"
+    name: "nic-{{ item }}"
+    virtual_network: "{{ virtual_network_name }}"
+    subnet: "{{ cluster_subnet_name }}"
+    security_group: openshiftsecgroup
+    ip_configurations:
+      - name: ipconfig1
+        load_balancer_backend_address_pools:
+         - name: backendaddrpool0
+           load_balancer: OcpRouterLB
+  when: group_var_filtered == "infras"
+
+
+- name: Create Public NIC for Workers
+  azure_rm_networkinterface:
+    resource_group: "{{ resource_group_name }}"
+    name: "nic-{{ item }}"
+    virtual_network: "{{ virtual_network_name }}"
+    subnet: "{{ cluster_subnet_name }}"
+    security_group: openshiftsecgroup
+  when: group_var_filtered == "infras"
 
 
 - name: Create VM
