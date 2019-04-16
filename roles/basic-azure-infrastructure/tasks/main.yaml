@@ -212,7 +212,7 @@
       - name: backendaddrpoolm0
     probes:
       - name: probm0
-        port: 80
+        port: 443
     load_balancing_rules:
       - name: lbrbalancingrulem0
         frontend_ip_configuration: frontendipconfm0
