@@ -139,6 +139,20 @@
     tags:
       delete: on-exit
 
+  - name: Create Blob Storage Account
+    azure_rm_storageaccount:
+      resource_group: "{{ resource_group_name }}"
+      name: "{{ blob_storage_account_name }}" 
+      type: Standard_RAGRS
+      kind: BlobStorage
+      access_tier: Hot
+
+  - name: Create Blob Container
+    azure_rm_storageblob:
+      resource_group: "{{ resource_group_name }}"
+      storage_account_name: "{{ blob_storage_account_name }}"
+      container: registry
+
 # --------------------------------
 # Availability Sets
 # --------------------------------
