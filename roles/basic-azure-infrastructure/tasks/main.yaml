@@ -151,6 +151,7 @@
   azure_rm_storageblob:
     resource_group: "{{ resource_group_name }}"
     storage_account_name: "{{ blob_storage_account_name }}"
+    public_access: container
     container: registry
 
 # --------------------------------
@@ -205,6 +206,7 @@
     name: OcpMasterLB
     location: "{{ location_resource_group }}"
     resource_group: "{{ resource_group_name }}"
+    load_distribution: SourceIPProtocol
     frontend_ip_configurations:
       - name: frontendipconfm0
         public_ip_address: masterExternalLB

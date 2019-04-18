@@ -160,5 +160,5 @@
    regexp: '^DEVS=/dev/sdb'
    line: 'DEVS=/dev/sdc'
    
-- name: Run remote playbook (its weird this way by now. later we change this)
-  shell: "ansible-playbook -b /etc/ansible/playbooks/openshift/all-hostpreparation.yaml"
+#- name: Run remote playbook (its weird this way by now. later we change this)
+#  shell: "ansible-playbook -b /etc/ansible/playbooks/openshift/all-hostpreparation.yaml"
