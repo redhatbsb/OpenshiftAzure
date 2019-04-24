@@ -2,11 +2,19 @@
 # Create Azure Infrastructure
 ###########################################
 - hosts: localhost
-  
+  vars_prompt:
+    - name: "password"
+      prompt: "Password for subscription"
+      private: yes
+
   tasks:
   - name: Include variables
     include_vars:
       file: config.yaml
+
+  - name: Set Fact for localhost
+    set_fact:
+     password_sub: "{{ password }}"
 
   - name: Create basic Azure Infrastructure (Resource Groups, Networks, Subnets)
     import_role: 
@@ -36,11 +44,16 @@
 # Do post install stuff on Bastion
 ###########################################
 - hosts: bastiongroup
+  no_log: true
   become: yes
   tasks:
   - name: Include variables
     include_vars:
       file: config.yaml
+
+  - name: Copy password variable from localhost
+    set_fact:
+     password: "{{ hostvars['localhost']['password_sub'] }}"
 
   - name: Do postinstall on Bastion
     import_role:
