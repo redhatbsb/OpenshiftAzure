@@ -68,14 +68,20 @@ Ex: Sintaxe config.yaml
 \# Azure Specifics  
 \# ==========================  
 resource_group_name: Openshift  
-location_resource_group: westus  
+location_resource_group: eastus  
 storage_account_name: stropenshift  
+blob_storage_account_name: blobopenshift  
 virtual_network_name: openshiftvn  
 private_virtual_network_name: pvtopenshiftvn  
 cluster_subnet_name: clustersubnet  
 private_cluster_subnet_name: pvtclustersubnet  
 admin_username_vm: ansible  
 admin_password_vm: Redhat4ever!  
+openshift_cloudprovider_azure_client_id: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"   
+openshift_cloudprovider_azure_client_secret: "{{ lookup('env', 'AZURE_SECRET') }}"   
+openshift_cloudprovider_azure_tenant_id: "{{ lookup('env', 'AZURE_TENANT') }}"  
+openshift_cloudprovider_azure_subscription_id: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"  
+
 \# ==========================  
 \# Subscription data  
 \# ==========================  
