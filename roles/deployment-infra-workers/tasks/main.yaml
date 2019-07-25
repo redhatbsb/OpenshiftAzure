@@ -3,9 +3,9 @@
    worker_hostnames: []
 
 - name: Set workers hostname
-  set_fact: 
-    worker_hostnames: "{{ worker_hostnames }} + [  item  ]"
-  with_sequence: start=1 end={{ number_of_workers }} format=worker%02d.{{ domain }}
+  set_fact:
+    worker_hostnames: "{{ worker_hostnames + [ 'worker%02d'|format(item|int)+'.'+domain ] }}"
+  loop: "{{ range(1, number_of_workers + 1, 1)|list }}"
 
 
 - name: Create machines

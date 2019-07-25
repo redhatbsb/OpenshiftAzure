@@ -3,9 +3,10 @@
    infra_hostnames: []
 
 - name: Set infras hostname
-  set_fact: 
-    infra_hostnames: "{{ infra_hostnames }} + [  item  ]"
-  with_sequence: start=1 end={{ number_of_infras }} format=infra%02d.{{ domain }}
+  set_fact:
+    infra_hostnames: "{{ infra_hostnames + [ 'infra%02d'|format(item|int)+'.'+domain ] }}"
+  loop: "{{ range(1, number_of_infras + 1, 1)|list }}"
+
 
 - name: Create machines
   include_role:

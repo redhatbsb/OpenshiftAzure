@@ -3,9 +3,10 @@
    master_hostnames: []
 
 - name: Set masters hostname
-  set_fact: 
-    master_hostnames: "{{ master_hostnames }} + [  item  ]"
-  with_sequence: start=1 end={{ number_of_masters }} format=master%02d.{{ domain }}
+  set_fact:
+    master_hostnames: "{{ master_hostnames + [ 'master%02d'|format(item|int)+'.'+domain ] }}"
+  loop: "{{ range(1, number_of_masters + 1, 1)|list }}"
+
 
 - name: Create machines
   include_role:

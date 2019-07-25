@@ -44,7 +44,7 @@
 # Do post install stuff on Bastion
 ###########################################
 - hosts: bastiongroup
-  no_log: true
+  no_log: false
   become: yes
   tasks:
   - name: Include variables
@@ -54,6 +54,9 @@
   - name: Copy password variable from localhost
     set_fact:
      password: "{{ hostvars['localhost']['password_sub'] }}"
+
+  - name: Verifica se senha esta ok...
+    debug: var=password
 
   - name: Do postinstall on Bastion
     import_role:
