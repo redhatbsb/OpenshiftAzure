@@ -89,7 +89,7 @@ user: email@subscriptionredhat
 password:   
 poolid:   
 \# ==========================  
-\# Sisu Openshift Cluster  
+\# Openshift Cluster  
 \# ==========================  
 domain: openshift.4players.com.br  
 cluster_hostname: master.{{ domain }}  
